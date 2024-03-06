@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.10)
 
 project(DianCubes)
 
+set(CMAKE_CXX_STANDARD 17)
+
+if(MSVC)
+    add_compile_options(/wd4819)
+endif()
+
+
 link_directories(lib)
 
 # 添加 GLAD 和链接 OpenGL 库
