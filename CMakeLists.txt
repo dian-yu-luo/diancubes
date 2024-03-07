@@ -7,6 +7,24 @@ set(CMAKE_CXX_STANDARD 17)
 if(MSVC)
     add_compile_options(/wd4819)
 endif()
+# 依靠fetchcontent 属性安装第三方库
+include(FetchContent)
+
+FetchContent_Declare(
+  glm
+  GIT_REPOSITORY https://github.com/g-truc/glm.git
+  GIT_TAG 1.0.1
+  GIT_SHALLOW 1
+  )
+
+FetchContent_MakeAvailable(glm)
+
+# FetchContent_Declare(
+#   json
+#   GIT_REPOSITORY https://github.com/nlohmann/json.git
+#   GIT_TAG v3.11.1)
+
+# FetchContent_MakeAvailable(json)
 
 
 link_directories(lib)
@@ -24,5 +42,5 @@ set(SOURCE_FILES
 add_executable(DianCubes ${SOURCE_FILES})
 
 # 链接 GLFW 和 GLAD 库
-target_link_libraries(DianCubes PRIVATE glfw3 )
+target_link_libraries(DianCubes PRIVATE glfw3 glm)
 
