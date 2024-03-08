@@ -49,6 +49,7 @@ include_directories(include)
 set(SOURCE_FILES 
     src/main.cpp
     src/glad.c
+    src/stb_image.cpp
     # 这里列出你的其他源文件
 )
 
