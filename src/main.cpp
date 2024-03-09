@@ -93,6 +93,8 @@ int main()
     // -------------------------
     // TODO shader 是干什么的
     Shader lightingShader("5.1.light_casters.vs", "5.1.light_casters.fs");
+
+    // TODO 删掉光照的相关内容,没有用到这个部分的代码
     Shader lightCubeShader("5.1.light_cube.vs", "5.1.light_cube.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -156,14 +158,26 @@ int main()
         glm::vec3(-1.3f,  1.0f, -1.5f)
     };
     // first, configure the cube's VAO (and VBO)
+
+    // 这个是重点,生成了大量的缓冲对象,这个是数据的要点
     unsigned int VBO, cubeVAO;
+
+    // cpp 中的标识符的思想,相当于是一个标志,方便的管理,更多更复杂的内容,数据结构
+    // 由更重要的信息管理
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &VBO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    // 下面的这些内容是顶点数据,进行一下绑定,也就是刚才生成的vbo
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+// 这个时候vao 和vbo 产生联系
     glBindVertexArray(cubeVAO);
+
+    // 创建一个顶点数组对象和一个缓冲区对象，并将顶点数据存储到缓冲区中。
+    // 然后设置顶点属性指针，使得顶点着色器能够正确地读取顶点数据，并最后启用顶点属性
+
+    // 简单的说也就是让数组对象和显卡中的对应的管线联系起来
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -201,25 +215,40 @@ int main()
     {
         // per-frame time logic
         // --------------------
+        // 显示类型转换,这个小知识点补一下
+        // 使用显示类型转换的原因就是c风格中的代码
+        // 直接就把所有的情况都放到了一起,都是强制的,隐性的类型转换
+        // 导致了很多的风险
+
+        // 作为新的代码规范直接才用新的方式,也就是把类型转换分类,
+        // 然后显式的进行转换,帮助用户进行代码调试,知道代码的问题
+        // 出在了哪里
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
         // input
         // -----
+        // 获得键盘输入
         processInput(window);
 
         // render
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+        // 这个也就是颜色和深度缓冲区
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // be sure to activate shader when setting uniforms/drawing objects
+
+        // 完成多个角度的绑定,怎么做到着色器(也就是渲染的内容和 照相机的位置进行绑定)
         lightingShader.use();
         lightingShader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
-        lightingShader.setVec3("viewPos", camera.Position);
+        lightingShader.setVec3("viewPos", camera.Position); //position 也是一个三维向量
 
         // light properties
+        // 环境光,漫反射,镜面反射,(我也看不懂,不想看) 
+        // TODO 有意思的是这玩意允许使用字符串来进行代码的编写
         lightingShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
         lightingShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
         lightingShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
@@ -228,8 +257,18 @@ int main()
         lightingShader.setFloat("material.shininess", 32.0f);
 
         // view/projection transformations
+
+        // TODO important point TODO 重点 
+        // 用到了数学里面的重点的信息,
+        
+
+        // FIXME 函数来计算透视投影矩阵
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+        // 获得照相机的视图矩阵
         glm::mat4 view = camera.GetViewMatrix();
+        // 将获得的结果传递给对应的着色器,这个时间点以后,就不是cpu工作的时候了
+        // 就是显卡开始计算的时候了
         lightingShader.setMat4("projection", projection);
         lightingShader.setMat4("view", view);
 
@@ -249,14 +288,16 @@ int main()
         // glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
         // render containers
+        // 指定所有的顶点,把对应的顶点进行世界转换,也就是开始进行放大,平移,缩小,旋转
         glBindVertexArray(cubeVAO);
         for (unsigned int i = 0; i < 10; i++)
         {
             // calculate the model matrix for each object and pass it to shader before drawing
-            glm::mat4 model = glm::mat4(1.0f);
+            glm::mat4 model = glm::mat4(1.0f); // model 每次操作都要进行一次初始化
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            // 旋转角色,注意这里的shader 在前面已经和camera进行了相关性联系
             lightingShader.setMat4("model", model);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -300,6 +341,7 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
+    //TODO 这里就是视角转换需要用到的知识点了,重点阅读 照相机类的相关代码
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
