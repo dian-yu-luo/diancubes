@@ -11,7 +11,7 @@
 #include <learnopengl/camera.h>
 
 #include <iostream>
-
+// 函数声明,c/cpp 先定义在声明
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -21,7 +21,7 @@ unsigned int loadTexture(const char *path);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
+// TODO 需要阅读的部分,照相机的阅读顺序
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -41,20 +41,23 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "dianyuluo", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
+    // 修改的是改变windows 指针指向的内容
+    // 渲染内容指向这里
     glfwMakeContextCurrent(window);
+    
+
+    // 设置回调函数,在各种hook后面添加对应的动作
+    // TODO 查看对应的hook函数的具体内容
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -64,6 +67,14 @@ int main()
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
+
+    // 后续的使用操作是glad的进行的
+    // 什么原理不重要,只需要知道进行这步之后我就可以进行图像的渲染了
+
+
+    // TODO 这种靠指针的方式进行载入是怎么实现的? 可以查看一下cpp手册
+    // 并自己完成一个简单的demo
+
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
@@ -72,10 +83,15 @@ int main()
 
     // configure global opengl state
     // -----------------------------
+    // 开启渲染深度检查,其实就是相当于完成了项目中的一个重要的任务目标
+    // 智能地处理透明物体之间的相对深度,这个问题官方仓库已经帮我解决掉了
+    // 但是我需要完成的是
+    // TODO 了解其内在原理,实现方法并且介绍
     glEnable(GL_DEPTH_TEST);
 
     // build and compile shaders
     // -------------------------
+    // TODO shader 是干什么的
     Shader lightingShader("5.1.light_casters.vs", "5.1.light_casters.fs");
     Shader lightCubeShader("5.1.light_cube.vs", "5.1.light_cube.fs");
 
@@ -126,6 +142,7 @@ int main()
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
     };
     // positions all containers
+    // glm::vec3 用来存储三维向量数据,这个数据
     glm::vec3 cubePositions[] = {
         glm::vec3( 0.0f,  0.0f,  0.0f),
         glm::vec3( 2.0f,  5.0f, -15.0f),
@@ -174,6 +191,8 @@ int main()
     lightingShader.use();
     lightingShader.setInt("material.diffuse", 0);
     lightingShader.setInt("material.specular", 1);
+
+    // 至此基础配置信息完成,然后开始画图,渲染
 
 
     // render loop
@@ -263,6 +282,8 @@ int main()
         glfwPollEvents();
     }
 
+
+// 收尾操作,没啥可看的,看也看不懂
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &cubeVAO);
