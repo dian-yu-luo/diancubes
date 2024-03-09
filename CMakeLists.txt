@@ -33,14 +33,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glm)
 
-# FetchContent_Declare(
-#   json
-#   GIT_REPOSITORY https://github.com/nlohmann/json.git
-#   GIT_TAG v3.11.1)
-
-# FetchContent_MakeAvailable(json)
-
-
 link_directories(lib)
 
 # 添加 GLAD 和链接 OpenGL 库
