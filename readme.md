@@ -5,8 +5,6 @@
 2. msvc2022
 3. git
 
-## 编译步骤
+## 项目具体文档情查看
 
-git clone 
-cd interview 
-cmake  -S. -Bbuild  
+[项目总结报告](./项目总结报告.md)
