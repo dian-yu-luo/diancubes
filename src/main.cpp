@@ -21,7 +21,6 @@ unsigned int loadTexture(const char *path);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-// TODO 需要阅读的部分,照相机的阅读顺序
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = SCR_WIDTH / 2.0f;
@@ -259,8 +258,6 @@ int main()
         // TODO important point TODO 重点 
         // 用到了数学里面的重点的信息,
         
-
-        // FIXME 函数来计算透视投影矩阵
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
         // 获得照相机的视图矩阵
