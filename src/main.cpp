@@ -93,10 +93,7 @@ int main()
     // -------------------------
     // TODO shader 是干什么的
     Shader lightingShader("5.1.light_casters.vs", "5.1.light_casters.fs");
-
-    // TODO 删掉光照的相关内容,没有用到这个部分的代码
-    Shader lightCubeShader("5.1.light_cube.vs", "5.1.light_cube.fs");
-
+    
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
