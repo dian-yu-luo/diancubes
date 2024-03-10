@@ -56,7 +56,6 @@ int main()
     
 
     // 设置回调函数,在各种hook后面添加对应的动作
-    // TODO 查看对应的hook函数的具体内容
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
@@ -89,7 +88,6 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    // TODO shader 是干什么的
     Shader lightingShader("5.1.light_casters.vs", "5.1.light_casters.fs");
     
     // set up vertex data (and buffer(s)) and configure vertex attributes
@@ -254,7 +252,6 @@ int main()
 
         // view/projection transformations
 
-        // TODO important point TODO 重点 
         // 用到了数学里面的重点的信息,
         
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -335,7 +332,6 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
-    //TODO 这里就是视角转换需要用到的知识点了,重点阅读 照相机类的相关代码
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
